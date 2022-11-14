@@ -1,0 +1,21 @@
+﻿Inventory_ID,Name,Price,Quantity
+1,Computer,1000,1000
+2,Phone,500,1000
+3,Tablet,300,750
+4,Watch,250,500
+5,Charging Chord (Phone),20,1500
+6,Charging Block (Phone),25,1500
+7,Headphones,100,500
+8,Earbuds,25,500
+9,Phone Case,20,1000
+10,Speaker,100,500
+11,Television,350,500
+12,Video Game Console,300,500
+13,Video Game Controller,50,1000
+14,Charging Chord (Computer),30,1000
+15,Charging Block (Computer),35,1000
+16,Tablet Case,25,750
+17,Charging Chord (Tablet),25,750
+18,Charging Block (Tablet),30,750
+19,Camera,100,500
+20,Camera Case,25,500
