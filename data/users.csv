@@ -1,2 +1,2 @@
-﻿User_ID,First Name,Last Name,username,password,Email,Address,Phone Number,Admin
+﻿user_id,first_name,last_name,username,password,email,address,phone_number,admin
 1,Liam,Hackett,lhackett,lhackett,wjhackett7@gmail.com,39a Buell St,8023932046,TRUE

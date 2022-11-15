@@ -1,4 +1,4 @@
-﻿Inventory_ID,Name,Price,Quantity
+﻿inventory_id,name,price,quantity
 1,Computer,1000,1000
 2,Phone,500,1000
 3,Tablet,300,750

@@ -1,2 +1,2 @@
-﻿Purchase_ID,User_ID,Inventory_ID,Cost,DOP
+﻿purchase_id, user_id,inventory_id,cost,dop
 1,1,1,1000,11/14/22
