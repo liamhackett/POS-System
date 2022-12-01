@@ -3,6 +3,9 @@ import pandas as pd
 from datetime import date
 import time
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 def login(cur):
     username = ""
     password = ""
@@ -127,10 +130,12 @@ def purchase(user_id, cart, conn, cur):
 
     for item in cart:
         cur.execute(f"INSERT INTO purchases (user_id, inventory_id, cost, quantity, dop) VALUES ({user_id}, {item[0]}, {item[1]}, {item[2]}, '{today}')")
+        cur.execute(f"SELECT quantity FROM inventory WHERE inventory_id = {item[0]}")
+        quantity = cur.fetchall()
+        cur.execute(f"UPDATE inventory SET quantity = {quantity[0][0]-1} WHERE inventory_id = {item[0]}")
 
     conn.commit()
     print("Purchase complete\n")
-    # ADD LINE TO UPDATE COUNT IN INVENTORY
 
 def view_purchases(user_id, cur):
     cur.execute(f"SELECT purchase_id, cost, quantity, dop FROM users INNER JOIN purchases ON users.user_id == purchases.user_id WHERE purchases.user_id == {user_id} ORDER BY dop")
@@ -176,7 +181,6 @@ def edit_inventory(cur, conn):
 def view_all_purchases(cur):
     cur.execute("SELECT purchase_id, inventory_id, first_name, last_name, cost, quantity dop FROM purchases INNER JOIN users ON purchases.user_id == users.user_id")
     purchases = cur.fetchall()
-    print(purchases)
     for purchase in purchases:
         cur.execute(f"SELECT name FROM inventory WHERE inventory_id = {purchase[1]}")
         name_data = cur.fetchall()
@@ -194,6 +198,18 @@ def delete_user(cur, conn):
     print("Enter a user id to delete")   
     id = input("=> ")
     cur.execute(f"DELETE FROM users WHERE user_id == {id}")
+
+def average_purchases(cur):
+    cur.execute(f"SELECT AVG(cost * quantity) FROM purchases")
+    avg = cur.fetchall()
+    print(f"Average Cost of Purchases: {avg[0][0]}")
+
+def graph_purchases(cur, conn):
+    dataframe = pd.read_sql("SELECT (purchases.cost * purchases.quantity) as sales, dop FROM purchases", conn)
+    print(dataframe.head())
+
+    sns.lineplot(x="dop", y="sales", data=dataframe).set_title("Sales")
+    plt.show()
 
 def main():
     conn = sqlite3.connect("users.db")
@@ -238,14 +254,21 @@ def main():
                         temp_input = input("Invalid Input => ")
                     if temp_input == "b":
                         edit_inventory(cur, conn)
-                
+                    # Add option to visualize inventory
+
                 elif user_input == "b":
                     view_all_purchases(cur)
-                    print("Choose an option:\n a) Go Back")
+                    print("Choose an option:\n a) Go Back\n b) Average Cost of Purchases\n c) Graph Sales")
                     temp_input = input("=> ")
-                    while temp_input !="a":
+                    while temp_input !="a" and temp_input !="b" and temp_input !="c":
                         temp_input = input("Invalid Input => ")
-                
+                    if temp_input == "b":
+                        average_purchases(cur)
+                    elif temp_input == "c":
+                        graph_purchases(cur, conn)
+                    # Add option for min max median for cost
+                    # Add option to graph sales for each month 
+
                 elif user_input == "c":
                     view_users(cur)
                     print("Choose an option:\n a) Go Back\n b) Delete User")
