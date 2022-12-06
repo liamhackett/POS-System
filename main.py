@@ -2,6 +2,7 @@ import sqlite3
 from admin_functions import *
 from user_functions import *
 
+
 def login(cur):
     username = ""
     password = ""
@@ -73,6 +74,7 @@ def main():
         user_id = name[0][2]
         admin = name[0][3]
         
+        # Admin mode options
         if admin == 1:
             admin_mode = input("Would you like to enter Admin mode? (y/n): ")
             while admin_mode != "y" and admin_mode != "n":
@@ -133,8 +135,8 @@ def main():
                     admin_mode = ""
                     quit = True
 
+        # Customer options
         while not quit:
-
             print("Welcome to POS System")
             print("Choose an Option:\na) View Products\nb) User Info\nc) View Purchases\nd) Log-out")
             user_input =  input("=> ")

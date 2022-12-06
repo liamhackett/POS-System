@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import date
 import time
 
+# Allows user to view their account info
 def show_info(user_id, cur):
     cur.execute(f"SELECT username, first_name, last_name, email, address, phone_number FROM users WHERE user_id = '{user_id}'")
     user_info = cur.fetchall()
@@ -11,6 +12,7 @@ def show_info(user_id, cur):
     print(f" Username: {user_info[0][0]}\n First Name: {user_info[0][1]}\n Last Name: {user_info[0][2]}\n Email: {user_info[0][3]}\n Address: {user_info[0][4]}\n Phone Number: {user_info[0][5]}\n ")
 
 
+# Allows user to edit their account info
 def edit(user_id, conn, cur):
     print("Here is a list of all column names:\nuser_id\nusername\npassword\nfirst_name\nlast_name\nemail\naddress\nphone_number")
     column = input("Select a column to edit => ")
@@ -30,6 +32,7 @@ def edit(user_id, conn, cur):
     conn.commit()
 
 
+# Allows user to view the products available to purchase
 def display_inventory(cur):
     cur.execute("SELECT * FROM inventory")
     inventory = cur.fetchall()
@@ -37,7 +40,7 @@ def display_inventory(cur):
         time.sleep(.25)
         print(f'{item[0]}: {item[1]} | ${item[2]}.00')
 
-
+# Allows user to add an item to their cart
 def add_to_cart(cur):
     conn = sqlite3.connect("cart.db")
     curs = conn.cursor()
@@ -75,6 +78,7 @@ def add_to_cart(cur):
     return cart
 
 
+# Allows user to purchase the items in their cart
 def purchase(user_id, cart, conn, cur):
     d = date.today()
     today = d.strftime("%m/%d/%Y")
@@ -88,6 +92,7 @@ def purchase(user_id, cart, conn, cur):
     conn.commit()
     print("Purchase complete\n")
 
+# allows user to view their purchases
 def view_purchases(user_id, cur):
     cur.execute(f"SELECT purchase_id, cost, quantity, dop, inventory_id FROM users INNER JOIN purchases ON users.user_id == purchases.user_id WHERE purchases.user_id == {user_id} ORDER BY dop")
     purchases = cur.fetchall()

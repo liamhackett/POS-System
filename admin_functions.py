@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Allows the admin to view inventory
 def view_inventory(cur):
     cur.execute(f'SELECT * FROM inventory')
     inventory = cur.fetchall()
@@ -9,6 +10,7 @@ def view_inventory(cur):
         print(f'{item[0]}: {item[1]} | ${item[2]}.00 | {item[3]}')
 
 
+# Allows the admin to edit inventory
 def edit_inventory(cur, conn):
     print("Enter an Inventory Id")
     id = input("=> ")
@@ -35,6 +37,7 @@ def edit_inventory(cur, conn):
     conn.commit()
 
 
+# Allows the admin to view purchases
 def view_all_purchases(cur):
     cur.execute("SELECT purchase_id, inventory_id, first_name, last_name, cost, quantity dop FROM purchases INNER JOIN users ON purchases.user_id == users.user_id")
     purchases = cur.fetchall()
@@ -45,6 +48,7 @@ def view_all_purchases(cur):
         print(f"{purchase[0]}: {purchase[2]} {purchase[3]} | {name} | {purchase[4]} | {purchase[5]}")
 
 
+# Allows the admin to view users
 def view_users(cur):
     cur.execute("SELECT * FROM users")
     users = cur.fetchall()
@@ -52,12 +56,14 @@ def view_users(cur):
         print(f"{user[0]}: {user[1]} {user[2]}\n username: {user[3]}\n email: {user[5]}\n address: {user[6]}\n phone number: {user[7]}")
 
 
+# Allows the admin to delete users
 def delete_user(cur, conn):
     print("Enter a user id to delete")   
     id = input("=> ")
     cur.execute(f"DELETE FROM users WHERE user_id == {id}")
+    conn.commit()
 
-
+# Allows admin to make another user admin
 def create_admin(cur, conn):
     print("Enter a User Id to make admin")
     cur.execute("SELECT count(user_id) FROM users")
@@ -74,12 +80,14 @@ def create_admin(cur, conn):
     conn.commit()
 
 
+# Allows the admin to view average cost of purchases
 def average_purchases(cur):
     cur.execute(f"SELECT AVG(cost * quantity) FROM purchases")
     avg = cur.fetchall()
     print(f"Average Cost of Purchases: {avg[0][0]}")
 
 
+# Allows the admin to view graph of purchases
 def graph_purchases(conn):
     dataframe = pd.read_sql("SELECT count(dop) as sales, dop FROM purchases GROUP BY dop;", conn)
     print(dataframe.head())
@@ -89,6 +97,7 @@ def graph_purchases(conn):
     plt.show()
 
 
+# Allows the admin to view graph of inventory
 def graph_inventory(conn):
     dataframe = pd.read_sql("SELECT name, quantity FROM inventory", conn)
     print(dataframe.head())
@@ -98,6 +107,7 @@ def graph_inventory(conn):
     plt.show()
 
 
+# Allows the admin to get the max/min for cost/quantity of items in inventory
 def  min_max_items(cur):
     print("Choose an Option:\n a) Max\n b) Min")
     choice = input("=>")
