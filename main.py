@@ -138,10 +138,10 @@ def purchase(user_id, cart, conn, cur):
     print("Purchase complete\n")
 
 def view_purchases(user_id, cur):
-    cur.execute(f"SELECT purchase_id, cost, quantity, dop FROM users INNER JOIN purchases ON users.user_id == purchases.user_id WHERE purchases.user_id == {user_id} ORDER BY dop")
+    cur.execute(f"SELECT purchase_id, cost, quantity, dop, inventory_id FROM users INNER JOIN purchases ON users.user_id == purchases.user_id WHERE purchases.user_id == {user_id} ORDER BY dop")
     purchases = cur.fetchall()
     for purchase in purchases:
-        cur.execute(f"SELECT name FROM inventory WHERE inventory_id = {purchase[2]}")
+        cur.execute(f"SELECT name FROM inventory WHERE inventory_id = {purchase[4]}")
         name_data = cur.fetchall()
         name = name_data[0][0]
         print(f"{purchase[0]}: {name} | ${purchase[1]}.00 | {purchase[2]} | {purchase[3]}")
@@ -190,7 +190,6 @@ def view_all_purchases(cur):
 def view_users(cur):
     cur.execute("SELECT * FROM users")
     users = cur.fetchall()
-    print(users)
     for user in users:
         print(f"{user[0]}: {user[1]} {user[2]}\n username: {user[3]}\n email: {user[5]}\n address: {user[6]}\n phone number: {user[7]}")
 
@@ -204,12 +203,35 @@ def average_purchases(cur):
     avg = cur.fetchall()
     print(f"Average Cost of Purchases: {avg[0][0]}")
 
-def graph_purchases(cur, conn):
-    dataframe = pd.read_sql("SELECT (purchases.cost * purchases.quantity) as sales, dop FROM purchases", conn)
+def graph_purchases(conn):
+    dataframe = pd.read_sql("SELECT count(dop) as sales, dop FROM purchases GROUP BY dop;", conn)
     print(dataframe.head())
 
     sns.lineplot(x="dop", y="sales", data=dataframe).set_title("Sales")
     plt.show()
+
+def graph_inventory(conn):
+    dataframe = pd.read_sql("SELECT name, quantity FROM inventory", conn)
+    print(dataframe.head())
+    plt.figure(figsize=(50, 5))
+    sns.barplot(x = "quantity", y = "name", data = dataframe)
+    sns.set(font_scale=.5)
+    plt.show()
+
+def  min_max_items(cur):
+    print("Choose an Option:\n a) Max\n b) Min")
+    choice = input("=>")
+    func = ""
+    while choice != "a" and choice != "b":
+        print("Invalid Input")
+        choice = input("=> ")
+    if choice == "a":
+        func = "Max"
+    elif choice == "b":
+        func = "Min"
+    cur.execute(f"SELECT {func}(price) FROM inventory;")
+    results = cur.fetchall()
+    print(f"The {func} of cost of items is {results[0][0]}")
 
 def main():
     conn = sqlite3.connect("users.db")
@@ -245,17 +267,21 @@ def main():
                 while user_input != "a" and user_input !="b" and user_input != "c" and user_input != "d" and user_input != "e":
                     print("Invalid Input")
                     user_input =  input("=> ")
-
+                
+                # Admin view inventory
                 if user_input == "a":
                     view_inventory(cur)
-                    print("Choose an option:\n a) Go Back\n b) Edit")
+                    print("Choose an option:\n a) Go Back\n b) Edit\n c) Visualize Inventory\n d) Min/Max Cost of Items")
                     temp_input = input("=> ")
-                    while temp_input != "b" and temp_input !="a":
+                    while temp_input != "b" and temp_input !="a" and temp_input != "c" and temp_input != "d":
                         temp_input = input("Invalid Input => ")
                     if temp_input == "b":
                         edit_inventory(cur, conn)
-                    # Add option to visualize inventory
-
+                    elif temp_input == "c":
+                        graph_inventory(conn)
+                    elif temp_input == "d":
+                        min_max_items(cur)
+                # Admin View Purchases
                 elif user_input == "b":
                     view_all_purchases(cur)
                     print("Choose an option:\n a) Go Back\n b) Average Cost of Purchases\n c) Graph Sales")
@@ -265,10 +291,10 @@ def main():
                     if temp_input == "b":
                         average_purchases(cur)
                     elif temp_input == "c":
-                        graph_purchases(cur, conn)
-                    # Add option for min max median for cost
+                        graph_purchases(conn)
                     # Add option to graph sales for each month 
 
+                # Admin View Users
                 elif user_input == "c":
                     view_users(cur)
                     print("Choose an option:\n a) Go Back\n b) Delete User")
@@ -278,9 +304,11 @@ def main():
                     if temp_input == "b":
                         delete_user(cur, conn)
 
+                # Enter Customer Mode
                 elif user_input == "d":
                     admin_mode = ""
 
+                # Log-Out
                 elif user_input == "e":
                     admin_mode = ""
                     quit = True
