@@ -133,4 +133,8 @@ def  min_max_items(cur):
 
     cur.execute(f"SELECT {func}({numeric}) FROM inventory;")
     results = cur.fetchall()
-    print(f"The {func} {numeric} of items is {results[0][0]}")
+    cur.execute(f"SELECT name FROM inventory WHERE {numeric}={results[0][0]}")
+    names = cur.fetchall()
+    print(f"{func} {numeric}: ")
+    for name in names:
+        print(f" {name[0]} | {results[0][0]}")
