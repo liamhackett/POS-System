@@ -84,7 +84,7 @@ def create_admin(cur, conn):
 def average_purchases(cur):
     cur.execute(f"SELECT AVG(cost * quantity) FROM purchases")
     avg = cur.fetchall()
-    print(f"Average Cost of Purchases: {avg[0][0]}")
+    print(f"Average Cost of Purchases: ${round(avg[0][0], 2)}")
 
 
 # Allows the admin to view graph of purchases
