@@ -112,7 +112,6 @@ def main():
                         average_purchases(cur)
                     elif temp_input == "c":
                         graph_purchases(conn)
-                    # Add option to graph sales for each month 
 
                 # Admin View Users
                 elif user_input == "c":

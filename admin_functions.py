@@ -115,15 +115,17 @@ def  min_max_items(cur):
     while choice != "a" and choice != "b":
         print("Invalid Input")
         choice = input("=> ")
-    print("Choose and Option:\n a) Cost\n b) Quantity")
-    numeric = input("=> ")
-    while numeric != "a" and numeric != "b":
-        print("Invalid Input")
-        choice = input("=> ")
     if choice == "a":
         func = "Max"
     elif choice == "b":
         func = "Min"
+
+    print("Choose and Option:\n a) Cost\n b) Quantity")
+    numeric = input("=> ")
+    while numeric != "a" and numeric != "b":
+        print("Invalid Input")
+        numeric = input("=> ")
+
     if numeric == "a":
         numeric = "price"
     elif numeric == "b":
